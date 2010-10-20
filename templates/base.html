@@ -1,34 +1,15 @@
-<!DOCTYPE html 
-     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-    dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}"
-    xml:lang="{% firstof LANGUAGE_CODE 'en' %}"
-    lang="{% firstof LANGUAGE_CODE 'en' %}">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
-    <title>CrunchTime! Table Tennis Tournament{% block title %}{% endblock %}</title>
-
-    {% block css %}
-    <link href='http://fonts.googleapis.com/css?family=Cantarell&amp;subset=latin' rel='stylesheet' type="text/css" />
-    <link href='http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz&amp;subset=latin' rel='stylesheet' type='text/css'>
+{% extends "base_html.html" %}
+{% block css %}
     <link href="{{ MEDIA_URL }}css/main.css" type="text/css" rel="stylesheet" />
     <link href="{{ MEDIA_URL }}css/countdown.css" type="text/css" rel="stylesheet" />
-    {% endblock %}
-
-    {% block preload_js %}
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}js/curvycorners.js"></script>
+{% endblock %}
+{% block preload_js %}
+   {{ block.super }}
     <script type="text/javascript" src="{{ MEDIA_URL }}js/jquerycrash.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.countdown.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}js/main.js"></script>
-    
-    {% endblock %}
-
-    {% block extra-head %}{% endblock %}
-  </head>
-
-  <body>
+{% endblock %}
+{% block body %}
   <div id="main">
     <div id="header">
      <h1 id="logo">CrunchTime! Table Tennis Tournament</h1>
@@ -96,5 +77,4 @@ test
 //--></script>
     {% endblock %}
   </div>
-  </body>
-</html>
+{% endblock %}
