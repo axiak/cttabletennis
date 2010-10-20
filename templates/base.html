@@ -6,15 +6,22 @@
     xml:lang="{% firstof LANGUAGE_CODE 'en' %}"
     lang="{% firstof LANGUAGE_CODE 'en' %}">
   <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
     <title>CrunchTime! Table Tennis Tournament{% block title %}{% endblock %}</title>
 
     {% block css %}
-    <link href='http://fonts.googleapis.com/css?family=Cantarell&subset=latin' rel='stylesheet' type="text/css" />
+    <link href='http://fonts.googleapis.com/css?family=Cantarell&amp;subset=latin' rel='stylesheet' type="text/css" />
+    <link href='http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz&amp;subset=latin' rel='stylesheet' type='text/css'>
     <link href="{{ MEDIA_URL }}css/main.css" type="text/css" rel="stylesheet" />
+    <link href="{{ MEDIA_URL }}css/countdown.css" type="text/css" rel="stylesheet" />
     {% endblock %}
 
     {% block preload_js %}
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/curvycorners.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquerycrash.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.countdown.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/main.js"></script>
     
     {% endblock %}
 
@@ -22,17 +29,72 @@
   </head>
 
   <body>
+  <div id="main">
     <div id="header">
+     <h1 id="logo">CrunchTime! Table Tennis Tournament</h1>
     </div>
-
-    <div class="content">
+    <div id="container">
+    <div id="content" class="rounded-bubble">
 	{% block content %}
+test
 	{% endblock %}
+      <div id="footer">
+      Logo is copyright CrunchtTime! Information Systems. <br />
+      Site is copyright CrunchTime! Information Systems &copy; 2010. All rights reserved.
+      </div>
+    </div>
+    <div id="countdown" class="rounded-bubble">
+  		<h1 style="font-size: 1.8em">Countdown</h1>
+		<div id="countdown_dashboard"> 
+ 
+			<div class="dash days_dash"> 
+				<span class="dash_title">days</span> 
+				<div class="digit">0</div> 
+				<div class="digit">2</div> 
+			</div> 
+ 
+			<div class="dash hours_dash"> 
+				<span class="dash_title">hours</span> 
+				<div class="digit">0</div> 
+				<div class="digit">8</div> 
+			</div> 
+ 
+			<div class="dash minutes_dash"> 
+				<span class="dash_title">minutes</span> 
+				<div class="digit">5</div> 
+				<div class="digit">2</div> 
+			</div> 
+ 
+			<div class="dash seconds_dash"> 
+				<span class="dash_title">seconds</span> 
+				<div class="digit">2</div> 
+				<div class="digit">1</div> 
+			</div> 
+ 
+		</div> 
+         </div>
     </div>
 
-    <div id="footer">
-    </div>
+
     {% block js %}
+  <script type="text/javascript"><!--
+	(function ($) {
+		$(document).ready(function (){
+			$("#countdown_dashboard").countDown({
+				omitWeeks: true,
+				targetDate: {
+					"day": 1,
+					"month": 11,
+					"year": 2010,
+					"hour": 8,
+					"min": 0,
+					"sec": 0
+				}});
+			$("a").bind("click", function () {return false;});
+		});
+	})(jQuery);
+//--></script>
     {% endblock %}
+  </div>
   </body>
 </html>
