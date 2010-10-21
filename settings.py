@@ -3,7 +3,7 @@ try:
     has_djangoappengine = True
 except ImportError:
     has_djangoappengine = False
-    DEBUG = True
+    DEBUG = False
     TEMPLATE_DEBUG = DEBUG
 
 import os
@@ -16,6 +16,16 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.admin',
+)
+
+MIDDLEWARE_CLASSES = (
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'middleware.block.BlockUnknown',
+    'middleware.debugip.DebugIp',
 )
 
 if has_djangoappengine:

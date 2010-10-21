@@ -5,6 +5,6 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     ('^$', 'django.views.generic.simple.direct_to_template',
-     {'template': 'blocked.html'}),
+     {'template': 'home.html'}),
     (r'^setup/', include(admin.site.urls)),
 )
