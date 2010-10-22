@@ -1,0 +1,6 @@
+<div id="navbar">
+  {% for place in places %}
+  <a {% if place.0 == current_place %}class="current-place" {% endif %}href="/{{ place.1 }}">{{ place.0 }}</a>
+  {% if not forloop.last %} | {% endif %}
+{% endfor %}
+</div>

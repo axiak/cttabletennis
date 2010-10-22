@@ -16,6 +16,8 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.admin',
+    'tournament',
+    'nav',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -30,6 +32,15 @@ MIDDLEWARE_CLASSES = (
 
 if has_djangoappengine:
     INSTALLED_APPS = ('djangoappengine',) + INSTALLED_APPS
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.core.context_processors.debug",
+    "nav.context_processor.set_path",
+)
 
 MEDIA_URL = "/media/"
 

@@ -15,9 +15,9 @@ skip_files:
 - ^(.*/)?.*\.py[co]
 - ^(.*/)?.*/RCS/.*
 - ^(.*/)?\..*
-- ^django/
-- ^djangotoolbox/
-- ^dbindexer/
+#- ^django/
+#- ^djangotoolbox/
+#- ^dbindexer/
 
 handlers:
 - url: /remote_api
@@ -27,9 +27,6 @@ handlers:
 - url: /_ah/queue/deferred
   script: djangoappengine/deferred/handler.py
   login: admin
-
-- url: /media/admin
-  static_dir: django/contrib/admin/media/
 
 - url: /media/
   static_dir: static/

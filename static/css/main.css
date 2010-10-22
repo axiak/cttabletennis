@@ -1,7 +1,8 @@
 body {
 	font-family: "Cantarell", arial, serif;
-	margin: 0;
+	margin: 0 0 20px 0;
 	padding: 0;
+	
 }
 #main {
 	margin: 0;
@@ -14,6 +15,14 @@ body {
 	background: -moz-linear-gradient(left, #D5E3EF 1%, #eeeeee 15%, #eeeeee 85%, #D5E3EF 100%); /* firefox */
 	background: -webkit-gradient(linear, left top, right top, color-stop(1%,#D5E3EF), color-stop(15%,#eeeeee), color-stop(85%,#eeeeee), color-stop(100%,#D5E3EF)); /* webkit */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#D5E3EF', endColorstr='#D5E3EF',GradientType=1 ); /* ie */
+}
+
+#countdown h1 {
+	margin: 5px 0px;
+	padding: 0px;
+	text-align: center;
+	width: 100%;
+	font-size: 1.5em;
 }
 
 #navbar {
@@ -46,19 +55,35 @@ body {
 	color: #999;
 }
 
-h1 { font-family: 'Yanone Kaffeesatz', arial, serif; }
+h1 {
+    font-family: 'Yanone Kaffeesatz', arial, serif;
+    font-size: 2.4em;
+}
 
 #content {
 	width: 650px;
 	float: left;
+	margin-bottom: 20px;
 }
 
 #container {
 	width: 900px;
-	margin: auto;
+	margin: auto;	
+	padding-bottom: 20px;
 }
 
+#footer {
+    margin-top: 5em;
+}
 
+#navbar .current-place {
+    color: #ddd;
+}
+
+#navbar .current-place:hover {
+    text-decoration: none;
+    cursor: default;
+}
 
 
 .rounded-bubble {

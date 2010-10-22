@@ -6,8 +6,9 @@ class DebugIp(object):
         ip = request.META['REMOTE_ADDR']
         if ip.startswith('127.'):
             settings.DEBUG = True
-        return none
+        return None
 
     def process_response(self, request, response):
         if hasattr(request, '_old_debug'):
             settings.DEBUG = request._old_debug
+        return response

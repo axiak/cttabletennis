@@ -1,4 +1,5 @@
 {% extends "base_html.html" %}
+{% load nav %}
 {% block css %}
     {{ block.super }}
     <link href="{{ MEDIA_URL }}css/main.css" type="text/css" rel="stylesheet" />
@@ -17,8 +18,10 @@
     </div>
     <div id="container">
     <div id="content" class="rounded-bubble">
+      {% block nav %}
+      {% nav_header %}
+      {% endblock %}
 	{% block content %}
-test
 	{% endblock %}
       <div id="footer">
       Logo is copyright CrunchtTime! Information Systems. <br />
@@ -26,7 +29,7 @@ test
       </div>
     </div>
     <div id="countdown" class="rounded-bubble">
-  		<h1 style="font-size: 1.8em">Countdown</h1>
+  		<h1>Countdown</h1>
 		<div id="countdown_dashboard"> 
  
 			<div class="dash days_dash"> 
@@ -72,7 +75,11 @@ test
 					"min": 0,
 					"sec": 0
 				}});
-			$("a").bind("click", function () {return false;});
+			$("#navbar a").bind("click", function () {
+			    var href = $(this).attr("href")
+			    return (href == "/" || href == "/teams" || href == "/rules");
+			});
+			$("#navbar a.current-place").bind("click", function (){ return false;});
 		});
 	})(jQuery);
 //--></script>
