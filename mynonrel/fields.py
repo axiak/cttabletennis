@@ -32,6 +32,7 @@ class RelListField(fields.AbstractIterableField, related.ManyToOneRel):
         if len(args) > 0:
             if isinstance(args[0], related.RelatedField) and not isinstance(args[0], models.ForeignKey):
                 raise TypeError("%r is not a ForeignKey, but is related." % args[0])
+            self.is_related = isinstance(args[0], models.ForeignKey)
         self.ordering = kwargs.pop('ordering', None)
         if self.ordering is not None and not callable(self.ordering):
             raise TypeError("'ordering' has to be a callable or None, "
@@ -48,15 +49,16 @@ class RelListField(fields.AbstractIterableField, related.ManyToOneRel):
         setattr(cls, self.name, RelListFieldDescriptor(self))
 
     def _convert(self, func, values, *args, **kwargs):
-        import sys
-        sys.stderr.write("HMM! %s\n" % str(values))
         values = super(RelListField, self)._convert(func, values, *args, **kwargs)
         if values is not None and self.ordering is not None:
             values.sort(key=self.ordering)
         return values
 
     def get_attname(self):
-        return '%s_data' % self.name
+        if self.is_related:
+            return '%s_data' % self.name
+        else:
+            return super(RelListField, self).get_attname()
 
     def set_attname(self, value):
         pass
