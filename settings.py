@@ -52,6 +52,12 @@ TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), 'templates'),)
 
 ROOT_URLCONF = 'urls'
 
+REMOTE_WHITELIST = (
+    '127.',
+    '209.113.164.',
+    '71.233.45.118',
+    '96.237.133.67',
+)
 
 # Activate django-dbindexer if available
 try:

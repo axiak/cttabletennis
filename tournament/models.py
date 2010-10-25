@@ -1,5 +1,5 @@
 from django.db import models
-from djangotoolbox import fields
+from mynonrel import fields
 
 from django.contrib.auth.models import User
 
@@ -36,14 +36,6 @@ class Tournament(models.Model):
         return self.name
 
 
-class Division(models.Model):
-    players = fields.ListField(models.ForeignKey(Player))
-    tournament = models.ForeignKey(Tournament)
-    name = models.CharField(max_length=255)
-
-    def __unicode__(self):
-        return u"Division '%s' for %s" % (self.name, self.tournament)
-
 
 GAME_TYPES = (
 ('single', 'single'),
@@ -66,6 +58,16 @@ class Team(models.Model):
         return template % {'name': self.name,
                            'players': ' and '.join(map(str, players))}
 
+class Division(models.Model):
+    teams = fields.RelListField(models.ForeignKey(Team))
+    tournament = models.ForeignKey(Tournament)
+    name = models.CharField(max_length=255)
+
+    def __unicode__(self):
+        return u"Division '%s' for %s" % (self.name, self.tournament)
+
+
+
 class Match(models.Model):
     match_type = models.CharField(choices=GAME_TYPES, max_length=255, default='single')
     team1 = models.ForeignKey(Team, related_name='team1_set')
@@ -74,11 +76,16 @@ class Match(models.Model):
     num_games = models.IntegerField(blank=True, null=True)
     parent_game = models.ForeignKey('self', blank=True, null=True)
     parent_division = models.ForeignKey(Division, blank=True, null=True)
-    team1_scores = fields.ListField(models.IntegerField(blank=True, null=True))
-    team2_scores = fields.ListField(models.IntegerField(blank=True, null=True))
+    team1_scores = fields.RelListField(models.IntegerField(blank=True, null=True))
+    team2_scores = fields.RelListField(models.IntegerField(blank=True, null=True))
 
     class Meta:
         verbose_name_plural = 'Matches'
+
+    def save(self, *args, **kwargs):
+        if bool(self.team1.player2) ^ bool(self.team2.player2):
+            raise ValueError("Cannot match a single versus a double!")
+        return super(Match, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return "Match between %s and %s" % (self.team1, self.team2)
