@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load tournamenttags %}
+
+{% block title %}- Divisions{% endblock %}
+
+{% block preload_js %}
+   {{ block.super }}
+   <script src="{{ MEDIA_URL }}js/jquery-ui-1.8.5.custom.min.js" type="text/javascript" language="JavaScript"></script>
+   <script type="text/javascript" language="JavaScript">
+   <!--
+	(function ($){
+		var Dialog;
+		$(document).ready(function() {
+			Dialog = $("#dialog-modal");
+			Dialog.dialog({
+				height: 450,
+				width: 500,
+				modal: true,
+				autoOpen: false
+			});
+			$("#singles a.record, #doubles a.record").bind("click", function (event) {
+				var title ="Team Profile";
+				if ($(this).parent().parent().attr("id") == "singles") {
+					title = "Player Profile";
+				}
+				Dialog.dialog("option", "title", title);
+				Dialog.html("<"+"p id='wait'><"+"img src='{{ MEDIA_URL }}img/loading.gif?1' border=0 /><"+"br />Loading...<"+"/p>");
+				Dialog.dialog('open');
+				Dialog.load(this.href);
+				return false;
+			});
+		});
+	})(jQuery);
+   //-->
+  </script>
+{% endblock %}
+
+{% block css %}
+    {{ block.super }}
+    <link href="{{ MEDIA_URL }}css/redmond/jquery-ui-1.8.5.custom.css" type="text/css" rel="stylesheet" />
+{% endblock %}
+
+
+
+{% block content %}
+<h1>Divisions</h1>
+<p>
+The first two weeks will consist of division playoffs. You will be responsible for playing everyone in one best-of-3 match and
+reporting the scores back here.
+</p>
+
+<div id="dialog-modal" title="Team Profile">test</div>
+
+<h2>Singles</h2>
+<div id="singles">
+{% for division in singles %}
+	<div class="division" id="division-{{ division.pk }}">
+		<h3>{{ division.name }}</h3>
+		{% for team in division.teams %}
+		{% team_item team %} <br />
+		{% endfor %}
+	</div>
+{% endfor %}
+</div>
+
+<h2>Doubles</h2>
+<div id="doubles">
+{% for division in doubles %}
+	<div class="division" id="division-{{ division.pk }}">
+		<h3>{{ division.name }}</h3>
+		{% for team in division.teams %}
+		{% team_item team %} <br />
+		{% endfor %}
+	</div>
+{% endfor %}
+</div>
+
+{% endblock %}

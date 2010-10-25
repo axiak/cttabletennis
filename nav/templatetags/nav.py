@@ -4,9 +4,11 @@ register = template.Library()
 places = (
     ('home', ''),
     'teams',
-    'players', 
+   # 'players', 
+    ('divisions', 'tournament/divisions/'),
     'rules',
-    'brackets',
+    
+#    'brackets',
     'prizes',
 )
 
@@ -23,7 +25,7 @@ def nav_header(context):
         if isinstance(place, basestring):
             place = (place, place)
         place, url = place
-        if path == url:
+        if path == url.strip('/'):
             break
     else:
         place = None

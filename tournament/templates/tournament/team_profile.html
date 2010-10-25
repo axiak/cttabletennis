@@ -1,0 +1,20 @@
+<h2>{{ team }} [{{ wins }} - {{ losses }}]</h2>
+{% if team.name %}
+<h3>{{ team.player1 }} and {{ team.player2 }} </h3>
+{% endif %}
+{% if future %}
+<h3>Upcoming Single Matches</h3>
+<ul>
+{% for match in future %}
+	<li>vs. {{ match.other_team }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+{% if historical %}
+<h3>Record</h3>
+<ul>
+{% for match in historical %}
+<li>vs. {{ match.other_team }} <span class="result">[{% if match.win %}W{% else %}L{% endif %}]</span></li>
+{% endfor %}
+</ul>
+{% endif %}

@@ -15,9 +15,9 @@ skip_files:
 - ^(.*/)?.*\.py[co]
 - ^(.*/)?.*/RCS/.*
 - ^(.*/)?\..*
-#- ^django/
-#- ^djangotoolbox/
-#- ^dbindexer/
+- ^django/
+- ^djangotoolbox/
+- ^dbindexer/
 
 handlers:
 - url: /remote_api

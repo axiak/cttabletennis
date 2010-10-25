@@ -49,6 +49,8 @@ class Team(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
 
     def __unicode__(self):
+        if not self.player2:
+            return self.player1.__unicode__()
         if self.name:
             template = '%(name)s (%(players)s)'
         else:
@@ -59,6 +61,24 @@ class Team(models.Model):
         return template % {'name': self.name,
                            'players': ' and '.join(map(str, players))}
 
+    @models.permalink
+    def get_absolute_url(self):
+        return ('view-team', (self.pk,), {})
+
+    def stats(self):
+        team = self
+        games = list(Match.objects.filter(team1=team))
+        games += list(Match.objects.filter(team2=team))
+        wins, losses = 0, 0
+        for game in games:
+            winner = game.winner()
+            if winner is not None:
+                if winner == team:
+                    wins += 1
+                else:
+                    losses += 1
+        return wins, losses, games
+
 class Division(models.Model):
     teams = fields.RelListField(models.ForeignKey(Team))
     tournament = models.ForeignKey(Tournament)
@@ -66,6 +86,9 @@ class Division(models.Model):
 
     def __unicode__(self):
         return u"Division '%s' for %s" % (self.name, self.tournament)
+
+    def is_double(self):
+        return bool(self.teams[0].player2)
 
 
 BEST_OF = (
@@ -94,7 +117,6 @@ class Match(models.Model):
         verbose_name_plural = 'Matches'
 
     def save(self, *args, **kwargs):
-
         return super(Match, self).save(*args, **kwargs)
 
     def __unicode__(self):
@@ -127,3 +149,14 @@ class Match(models.Model):
         if len(self.team1_scores) != len(self.team2_scores):
             raise ValidationError("Score lengths do not match.")
 
+
+    def winner(self):
+        if self.team1_scores is None:
+            return None
+        score_wins = [(a > b) - (a < b) for a, b in zip(self.team1_scores, self.team2_scores)]
+        if sum(score_wins) == 0:
+            return None
+        elif sum(score_wins) > 0:
+            return self.team1
+        else:
+            return self.team2

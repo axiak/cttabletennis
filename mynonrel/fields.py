@@ -90,6 +90,7 @@ class RelListFieldDescriptor(object):
             row_dict = dict((row.pk, row) for row in rows)
             row_list = [row_dict[pk] for pk in raw_data if pk in row_dict]
             setattr(instance, self.cache_name, row_list)
+            return row_list
 
     def __set__(self, instance, value):
         value = list(value)

@@ -95,3 +95,86 @@ h1 {
 	-webkit-border-radius: 15px;
 	-moz-border-radius: 15px;
 }
+
+#singles, #doubles {
+	width: 100%;
+	position: relative;
+	height: 850px;
+}
+
+#singles .division, #doubles .division {
+	border: 2px solid black;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	width: 200px;
+	background: #FADFAB;
+	padding: 5px;
+}
+#singles .division {
+	position: absolute;
+}
+
+.division a.record {
+	font-size: 0.8em;
+	color: #999;
+	text-decoration: none;
+}	
+.division a.record:hover {
+	text-decoration: underline;
+}
+
+#doubles .division {
+	width: 450px;
+	margin: 0 0 30px 90px;
+}
+
+.division h3 {
+	text-align: center;
+	width: 100%;
+	margin: 2px 0;
+}
+
+#division-121, #division-128, #division-135 {
+	left: 400px;
+}
+#division-114, #division-142, #division-149 {
+	left: 30px;
+}
+#division-121, #division-114 {
+	top: 15px;
+}
+#division-128, #division-142 {
+	top: 230px;
+}
+
+#division-149, #division-135 {
+	top: 445px;
+}
+
+#division-156 {
+	top: 660px;
+	left: 215px;
+}
+#wait {
+	display: block;
+	width: 100%;
+	text-align: center;
+	margin-top: 100px;
+	color: #ccc;
+}
+.ui-corner-all {
+	-webkit-border-radius: 15px !important;
+	-moz-border-radius: 15px !important;
+}
+
+#dialog-modal h2 {
+	margin: 0;
+}
+#dialog-modal * {
+	margin: 0;
+}
+#dialog-modal .bio {
+	font-size: 0.9em;
+	color: #666;
+	margin-left: 5px;
+}
