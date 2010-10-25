@@ -16,4 +16,5 @@ urlpatterns = patterns('',
                        ('^load_players', 'load_people.load_players'),
      
     (r'^setup/', include(admin.site.urls)),
+    (r'^tournament/', include('tournament.urls')),
 )

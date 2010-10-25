@@ -1,3 +1,4 @@
+import math
 from django.db import models
 from mynonrel import fields
 
@@ -67,26 +68,62 @@ class Division(models.Model):
         return u"Division '%s' for %s" % (self.name, self.tournament)
 
 
+BEST_OF = (
+    (1, 1),
+    (3, 3),
+    (5, 5),
+    (7, 7),
+)
+
 
 class Match(models.Model):
-    match_type = models.CharField(choices=GAME_TYPES, max_length=255, default='single')
+    match_type = models.CharField(choices=GAME_TYPES, max_length=255, default='single', blank=True)
     team1 = models.ForeignKey(Team, related_name='team1_set')
     team2 = models.ForeignKey(Team, related_name='team2_set')
     played = models.DateField(blank=True, null=True)
-    num_games = models.IntegerField(blank=True, null=True)
+    num_games = models.IntegerField(blank=True, null=True, verbose_name="Number of games")
+    best_of = models.IntegerField(choices=BEST_OF, default=3)
     parent_game = models.ForeignKey('self', blank=True, null=True)
     parent_division = models.ForeignKey(Division, blank=True, null=True)
-    team1_scores = fields.RelListField(models.IntegerField(blank=True, null=True))
-    team2_scores = fields.RelListField(models.IntegerField(blank=True, null=True))
+    team1_scores = fields.RelListField(models.IntegerField(), blank=True, null=True)
+    team2_scores = fields.RelListField(models.IntegerField(), blank=True, null=True)
+    score_recorded = models.DateTimeField(blank=True, null=True)
+    score_recorded_by = models.ForeignKey(User, blank=True, null=True)
 
     class Meta:
         verbose_name_plural = 'Matches'
 
     def save(self, *args, **kwargs):
-        if bool(self.team1.player2) ^ bool(self.team2.player2):
-            raise ValueError("Cannot match a single versus a double!")
+
         return super(Match, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return "Match between %s and %s" % (self.team1, self.team2)
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if bool(self.team1.player2) ^ bool(self.team2.player2):
+            raise ValidationError("Cannot match a single versus a double!")
+        if self.team1.player2:
+            self.match_type = 'doubles'
+        else:
+            self.match_type = 'singles'
+        if self.team1.player1 == self.team2.player1:
+            raise ValidationError("Player %s cannot play himself!" % self.team1.player1)
+        if self.match_type == 'doubles':
+            if self.team1.player1 == self.team2.player2:
+                raise ValidationError("Player %s cannot play himself!" % self.team1.player1)
+            if self.team1.player2 == self.team2.player1:
+                raise ValidationError("Player %s cannot play himself!" % self.team1.player2)
+            if self.team1.player2 == self.team2.player2:
+                raise ValidationError("Player %s cannot play himself!" % self.team1.player2)
+        if self.num_games is not None:
+            min_allowed = int(math.ceil(self.best_of / 2.0))
+            max_allowed = self.best_of
+            if self.num_games < min_allowed or self.num_games > max_allowed:
+                raise ValidationError("Number of games should be between %s and %s" % (min_allowed, max_allowed))
+            if len(self.team1_scores) != self.num_games or len(self.team2_scores) != self.num_games:
+                raise ValidationError("Number of games does not match number of scores.")
+        if len(self.team1_scores) != len(self.team2_scores):
+            raise ValidationError("Score lengths do not match.")
 
