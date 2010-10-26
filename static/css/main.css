@@ -104,8 +104,6 @@ h1 {
 
 #singles .division, #doubles .division {
 	border: 2px solid black;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
 	width: 200px;
 	background: #FADFAB;
 	padding: 5px;
@@ -134,24 +132,24 @@ h1 {
 	margin: 2px 0;
 }
 
-#division-121, #division-128, #division-135 {
+#division-bone-daddys, #division-joes-crab-shack, #division-flying-star {
 	left: 400px;
 }
-#division-114, #division-142, #division-149 {
+#division-princess, #division-cheesecake, #division-fuddruckers {
 	left: 30px;
 }
-#division-121, #division-114 {
+#division-bone-daddys, #division-princess {
 	top: 15px;
 }
-#division-128, #division-142 {
+#division-joes-crab-shack, #division-cheesecake {
 	top: 230px;
 }
 
-#division-149, #division-135 {
+#division-fuddruckers, #division-flying-star {
 	top: 445px;
 }
 
-#division-156 {
+#division-wagamama {
 	top: 660px;
 	left: 215px;
 }
@@ -162,18 +160,14 @@ h1 {
 	margin-top: 100px;
 	color: #ccc;
 }
-.ui-corner-all {
-	-webkit-border-radius: 15px !important;
-	-moz-border-radius: 15px !important;
-}
 
-#dialog-modal h2 {
+#division-dialog-modal h2 {
 	margin: 0;
 }
-#dialog-modal * {
+#division-dialog-modal * {
 	margin: 0;
 }
-#dialog-modal .bio {
+#division-dialog-modal .bio {
 	font-size: 0.9em;
 	color: #666;
 	margin-left: 5px;

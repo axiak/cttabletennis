@@ -1,8 +1,10 @@
 import math
 from django.db import models
 from mynonrel import fields
-
+from django.core.cache import cache
 from django.contrib.auth.models import User
+
+from cachehelper.helper import cachelib
 
 __all__ = ('Player', 'Tournament', 'Division', 'Match', 'Team')
 
@@ -52,7 +54,7 @@ class Team(models.Model):
         if not self.player2:
             return self.player1.__unicode__()
         if self.name:
-            template = '%(name)s (%(players)s)'
+            return self.name
         else:
             template = 'Team %(players)s'
         players = [self.player1]
@@ -65,7 +67,11 @@ class Team(models.Model):
     def get_absolute_url(self):
         return ('view-team', (self.pk,), {})
 
-    def stats(self):
+    def stats_key(self):
+        return 'stats__%s' % self.pk        
+
+    @cachelib.register_cache("stats")
+    def stats(self, allow_cache=True):
         team = self
         games = list(Match.objects.filter(team1=team))
         games += list(Match.objects.filter(team2=team))
@@ -77,7 +83,7 @@ class Team(models.Model):
                     wins += 1
                 else:
                     losses += 1
-        return wins, losses, games
+        return (wins, losses, games)
 
 class Division(models.Model):
     teams = fields.RelListField(models.ForeignKey(Team))
@@ -117,7 +123,9 @@ class Match(models.Model):
         verbose_name_plural = 'Matches'
 
     def save(self, *args, **kwargs):
-        return super(Match, self).save(*args, **kwargs)
+        super(Match, self).save(*args, **kwargs)
+        cachelib.recalculate(self.team1)
+        cachelib.recalculate(self.team2)
 
     def __unicode__(self):
         return "Match between %s and %s" % (self.team1, self.team2)

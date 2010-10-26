@@ -2,14 +2,8 @@
 {% load nav %}
 {% block css %}
     {{ block.super }}
-    <link href="{{ MEDIA_URL }}css/main.css?3" type="text/css" rel="stylesheet" />
+    <link href="{{ MEDIA_URL }}css/main.css?2.5" type="text/css" rel="stylesheet" />
     <link href="{{ MEDIA_URL }}css/countdown.css" type="text/css" rel="stylesheet" />
-{% endblock %}
-{% block preload_js %}
-   {{ block.super }}
-    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquerycrash.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.countdown.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}js/main.js"></script>
 {% endblock %}
 {% block body %}
   <div id="main">
@@ -24,7 +18,7 @@
 	{% block content %}
 	{% endblock %}
       <div id="footer">
-      Logo is copyright CrunchtTime! Information Systems. <br />
+      Logo is copyright CrunchTime! Information Systems. <br />
       Site is copyright CrunchTime! Information Systems &copy; 2010. All rights reserved.
       </div>
     </div>
@@ -59,30 +53,5 @@
 		</div> 
          </div>
     </div>
-
-
-    {% block js %}
-  <script type="text/javascript"><!--
-	(function ($) {
-		$(document).ready(function (){
-			$("#countdown_dashboard").countDown({
-				omitWeeks: true,
-				targetDate: {
-					"day": 1,
-					"month": 11,
-					"year": 2010,
-					"hour": 8,
-					"min": 0,
-					"sec": 0
-				}});
-			$("#navbar a").bind("click", function () {
-			    var href = $(this).attr("href")
-			    return (href != "/prizes");
-			});
-			$("#navbar a.current-place").bind("click", function (){ return false;});
-		});
-	})(jQuery);
-//--></script>
-    {% endblock %}
   </div>
 {% endblock %}

@@ -1,0 +1,8 @@
+from django.core.cache import cache
+
+
+class CacheLibrary(object):
+    cache_keys = None
+
+    def __init__(self):
+        self.cache_keys = cache_keys

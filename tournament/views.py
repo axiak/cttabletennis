@@ -4,6 +4,7 @@ import datetime
 from django.http import HttpResponse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.views.generic.simple import direct_to_template
+from django.core.cache import cache
 
 from tournament.models import *
 
@@ -36,15 +37,26 @@ def load_divisions(request):
 
 def view_divisions(request):
     t = Tournament.objects.get()
-    d = list(Division.objects.filter(tournament = t))
-    d.sort(key = lambda x: x.pk)
-    singles_divisions = []
-    doubles_divisions = []
-    for division in d:
-        if division.is_double():
-            doubles_divisions.append(division)
-        else:
-            singles_divisions.append(division)
+    singles_key = '%s__singles_div' % t.pk
+    doubles_key = '%s__doubles_div' % t.pk
+    timeout = 86400
+    singles_divisions = cache.get(singles_key)
+    doubles_divisions= cache.get(doubles_key)
+    if doubles_divisions is None or singles_divisions is None:
+        d = list(Division.objects.filter(tournament = t))
+        d.sort(key = lambda x: x.pk)
+        singles_divisions = []
+        doubles_divisions = []
+        for division in d:
+            for team in division.teams:
+                team.player1
+                team.player2
+            if division.is_double():
+                doubles_divisions.append(division)
+            else:
+                singles_divisions.append(division)
+        cache.set(singles_key, singles_divisions, timeout)
+        cache.set(doubles_key, doubles_divisions, timeout)
     return direct_to_template(request, 'tournament/divisions.html',
                               {'singles': singles_divisions,
                                'doubles': doubles_divisions})

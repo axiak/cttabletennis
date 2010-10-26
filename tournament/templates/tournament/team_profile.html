@@ -1,9 +1,9 @@
-<h2>{{ team }} [{{ wins }} - {{ losses }}]</h2>
+<h2>{% if team.name %}{{ team.name }}{% else %}{{ team }}{% endif %} [{{ wins }} - {{ losses }}]</h2>
 {% if team.name %}
 <h3>{{ team.player1 }} and {{ team.player2 }} </h3>
 {% endif %}
 {% if future %}
-<h3>Upcoming Single Matches</h3>
+<h3>Upcoming Matches</h3>
 <ul>
 {% for match in future %}
 	<li>vs. {{ match.other_team }}</li>

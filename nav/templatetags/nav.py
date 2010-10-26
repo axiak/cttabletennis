@@ -14,7 +14,9 @@ places = (
 
 @register.inclusion_tag("nav/nav_header.html", takes_context=True)
 def nav_header(context):
-    path = context['REQUEST_PATH'].strip('/')
+    path = None
+    if 'REQUEST_PATH' in context:
+        path = context['REQUEST_PATH'].strip('/')
     place_list = []
     for place in places:
         if isinstance(place, basestring):
