@@ -1,0 +1,36 @@
+<h2>{{ player }} [{{ wins }} - {{ losses }}]</h2>
+<h3>Bio</h3>
+<p class="bio">
+{% if not player.bio %}
+	Not available.
+{% else %}
+	{{ player.bio }}
+{% endif %}
+</p>
+<h2>Individual Performance</h2>
+{% for team in player.get_teams %}
+	{% if team.player2 %}<h2>Doubles Performance</h2>
+	<h3>{{ team }}</h3>
+	{% endif %}
+	{% with team.matches as match_info %}
+		{% with match_info.1 as future %}
+		{% with match_info.0 as historical %}
+		{% if future %}
+			<h3>Upcoming Single Matches</h3>
+			<ul>
+			{% for match in future %}
+				<li>vs. {{ match.other_team }}</li>
+			{% endfor %}
+			</ul>
+		{% endif %}
+		{% if historical %}
+			<h3>Record</h3>
+			<ul>
+			{% for match in historical %}
+			<li>vs. {{ match.other_team }} <span class="result">[{% if match.win %}W{% else %}L{% endif %}]</span></li>
+			{% endfor %}
+			</ul>
+		{% endif %}
+		{% endwith %}{% endwith %}
+	{% endwith %}
+{% endfor %}

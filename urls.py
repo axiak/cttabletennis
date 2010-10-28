@@ -17,4 +17,7 @@ urlpatterns = patterns('',
      
     (r'^setup/', include(admin.site.urls)),
     (r'^tournament/', include('tournament.urls')),
+    (r'^login/$', 'django.contrib.auth.views.login',
+       {'template_name': 'registration/login.html'}),
+
 )

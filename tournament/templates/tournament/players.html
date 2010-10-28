@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load tournamenttags %}
+
+{% block title %} - Players{% endblock %}
+
+{% block css %}
+    {{ block.super }}
+    <link href="{{ MEDIA_URL }}css/redmond/jquery-ui-1.8.5.custom.css" type="text/css" rel="stylesheet" />
+{% endblock %}
+
+
+
+{% block content %}
+<h1>Players</h1>
+<p>
+Meet the players here. Click on a player to view more details about them.
+</p>
+
+<div id="players">
+{% for player in players %}
+<h3>{{ player.user.first_name }}{% if player.nickname %} &quot;{{ player.nickname }}&quot; {% endif %} {{ player.user.last_name }}</h3>
+<div data-url="{% url view-player player.pk %}"><p id='wait' style="margin-top: 50px; margin-bottom: 50px;"><img src='/media/img/loading.gif' border=0 /><br />Loading...</p></div>
+{% endfor %}
+</div>
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	$("#players").accordion({
+		collapsible: true,
+		active: false,
+		animated: 'bounceslide',
+		autoHeight: false,
+		change: function (event, ui) {
+			if (!ui.newContent.find("#wait").length) {
+				return;
+			}
+			ui.newContent.load(ui.newContent.attr("data-url"));
+		}
+	});
+});
+</script>
+
+{% endblock %}

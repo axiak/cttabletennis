@@ -172,3 +172,10 @@ h1 {
 	color: #666;
 	margin-left: 5px;
 }
+#singles a.team-name, #doubles a.team-name {
+	color: #111;
+	text-decoration: underline;
+}
+#singles a.team-name:hover, #doubles a.team-name:hover {
+	text-decoration: none;
+}

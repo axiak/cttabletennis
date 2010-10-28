@@ -16,7 +16,7 @@
 				modal: true,
 				autoOpen: false
 			});
-			$("#singles a.record, #doubles a.record").bind("click", function (event) {
+			$("#singles a, #doubles a").bind("click", function (event) {
 				var title ="Team Profile";
 				if ($(this).parent().parent().attr("id") == "singles") {
 					title = "Player Profile";

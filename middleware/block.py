@@ -10,6 +10,10 @@ class BlockUnknown(object):
         ip = request.META['REMOTE_ADDR']
         allowed_ip_matches = getattr(settings, 'REMOTE_WHITELIST',
                                      default_whitelist)
+        if request.path.strip('/') == 'login':
+            return None
+        if request.user.is_authenticated():
+            return None
         for ip_match in allowed_ip_matches:
             if ip.startswith(ip_match):
                 return None

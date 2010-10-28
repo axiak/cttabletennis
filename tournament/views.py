@@ -1,12 +1,16 @@
 import itertools
-import datetime
+
+from collections import defaultdict
 
 from django.http import HttpResponse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.views.generic.simple import direct_to_template
 from django.core.cache import cache
 
+from cachehelper.helper import cachelib
+
 from tournament.models import *
+
 
 @staff_member_required
 def load_divisions(request):
@@ -35,55 +39,58 @@ def load_divisions(request):
                                      parent_division=d)
     return HttpResponse("Divisions Created!")
 
-def view_divisions(request):
-    t = Tournament.objects.get()
-    singles_key = '%s__singles_div' % t.pk
-    doubles_key = '%s__doubles_div' % t.pk
-    timeout = 86400
-    singles_divisions = cache.get(singles_key)
-    doubles_divisions= cache.get(doubles_key)
-    if doubles_divisions is None or singles_divisions is None:
-        d = list(Division.objects.filter(tournament = t))
-        d.sort(key = lambda x: x.pk)
-        singles_divisions = []
-        doubles_divisions = []
-        for division in d:
-            for team in division.teams:
-                team.player1
-                team.player2
-            if division.is_double():
-                doubles_divisions.append(division)
-            else:
-                singles_divisions.append(division)
-        cache.set(singles_key, singles_divisions, timeout)
-        cache.set(doubles_key, doubles_divisions, timeout)
+@cachelib.register_cache("view_divisions", model=Tournament, skip_pos=1, recompute=False)
+def view_divisions_t(request, t):
+    singles_divisions, doubles_divisions = t.get_divisions()
     return direct_to_template(request, 'tournament/divisions.html',
                               {'singles': singles_divisions,
                                'doubles': doubles_divisions})
 
+def view_divisions(request):
+    return view_divisions_t(request, Tournament.objects.get())
+
+def view_players(request):
+    return view_players_t(request, Tournament.objects.get())
+
+@cachelib.register_cache("view_players", model=Tournament, skip_pos=1, recompute=False)
+def view_players_t(request, t):
+    singles_divisions, doubles_divisions = t.get_divisions()
+    players = set()
+    players_teams = defaultdict(list)
+    for division in itertools.chain(singles_divisions, doubles_divisions):
+        for team in division.teams:
+            players_teams[team.player1].append(team)
+            players.add(team.player1)
+            if team.player2:
+                players_teams[team.player2].append(team)
+                players.add(team.player2)
+    players = list(players)
+    players.sort(key=lambda p: (p.user.first_name, p.user.last_name))
+    for player in players:
+        player.set_teams(players_teams[player])
+    
+    return direct_to_template(request, 'tournament/players.html',
+                              {'players': players})
+
+
+
+@cachelib.register_cache("view_player", model=Player, skip_pos=1, cache_timeout=3600, recompute=False)
+def view_player(request, player_pk):
+    player = Player.objects.get(pk=player_pk)
+    total_wins, total_losses = 0, 0
+    for team in player.get_teams():
+        wins, losses, matches = team.stats()
+        total_wins += wins
+        total_losses += losses
+    return direct_to_template(request, 'tournament/player_actual_profile.html',
+                              {'player': player, 'wins': total_wins, 'losses': total_losses})
+
+@cachelib.register_cache("view_team", model=Team, skip_pos=1, cache_timeout=3600, recompute=False)
 def view_team(request, team_pk):
     team = Team.objects.get(pk = team_pk)
     wins, losses, matches = team.stats()
-    def dvl(x, d):
-        if x is None:
-            return d
-        else:
-            return x
-    old_datetime = datetime.datetime(1900, 1, 1, 0, 0)
-    old_date = datetime.date(1900, 1, 1)
-    matches.sort(key=lambda x: (dvl(x.played, old_date), dvl(x.score_recorded, old_datetime)), reverse=True)
-    future, historical = [], []
-    for match in matches:
-        other_team = match.team1
-        if other_team == team:
-            other_team = match.team2
-        val = {'match': match, 'other_team': other_team}
-        if match.team1_scores:
-            val['win'] = match.winner() == team
-            val['scores'] = zip(match.team1_scores, match.team2_scores)
-            historical.append(val)
-        else:
-            future.append(val)
+    historical, future = team.matches()
+ 
     context = {'team': team,
                'wins': wins,
                'losses': losses,

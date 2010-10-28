@@ -1,3 +1,5 @@
+import datetime
+import itertools
 import math
 from django.db import models
 from mynonrel import fields
@@ -29,6 +31,21 @@ class Player(models.Model):
             n = u''
         return template % n
 
+    def set_teams(self, teams):
+        cache.set("player_%s_teams" % self.pk, teams, 86400)
+
+    @cachelib.register_cache("pteams", cache_timeout=3600)
+    def get_teams(self):
+        results = cache.get("player_%s_teams" % self.pk)
+        if results is not None:
+            return results
+        teams = []
+        for team in Team.objects.all():
+            if team.player1 == self or team.player2 == self:
+                teams.append(team)
+        teams.sort(key=lambda t: 0 if t.player2 is None else 1)
+        return teams
+
 
 class Tournament(models.Model):
     start_date = models.DateField()
@@ -38,6 +55,23 @@ class Tournament(models.Model):
     def __unicode__(self):
         return self.name
 
+    @cachelib.register_cache("tdivisions")
+    def get_divisions(self):
+        d = list(Division.objects.filter(tournament = self))
+        d.sort(key = lambda x: x.pk)
+        singles_divisions = []
+        doubles_divisions = []
+        for division in d:
+            if not division.teams:
+                continue
+            for team in division.teams:
+                str(team.player1)
+                str(team.player2)
+            if division.is_double():
+                doubles_divisions.append(division)
+            else:
+                singles_divisions.append(division)
+        return singles_divisions, doubles_divisions
 
 
 GAME_TYPES = (
@@ -85,6 +119,44 @@ class Team(models.Model):
                     losses += 1
         return (wins, losses, games)
 
+    def save(self, *args, **kwargs):
+        super(Team, self).save(*args, **kwargs)
+        divisions = Division.objects.all()
+        t = set()
+        for d in divisions:
+            if self.pk in d.teams_data:
+                cachelib.recalculate(d)
+                t.add(d.tournament)
+        for tournament in t:
+            cachelib.recalculate(tournament)
+
+    @cachelib.register_cache("matches")
+    def matches(self):
+        team = self
+        def dvl(x, d):
+            if x is None:
+                return d
+            else:
+                return x
+        wins, losses, matches = self.stats()
+        old_datetime = datetime.datetime(1900, 1, 1, 0, 0)
+        old_date = datetime.date(1900, 1, 1)
+        matches.sort(key=lambda x: (dvl(x.played, old_date), dvl(x.score_recorded, old_datetime)), reverse=True)
+        future, historical = [], []
+        for match in matches:
+            other_team = match.team1
+            if other_team == team:
+                other_team = match.team2
+            val = {'match': match, 'other_team': other_team}
+            if match.team1_scores:
+                val['win'] = match.winner() == team
+                val['scores'] = zip(match.team1_scores, match.team2_scores)
+                historical.append(val)
+            else:
+                future.append(val)
+        
+        return historical, future
+
 class Division(models.Model):
     teams = fields.RelListField(models.ForeignKey(Team))
     tournament = models.ForeignKey(Tournament)
@@ -96,6 +168,10 @@ class Division(models.Model):
     def is_double(self):
         return bool(self.teams[0].player2)
 
+    def save(self, *args, **kwargs):
+        super(Division, self).save(*args, **kwargs)
+        cachelib.recalculate(self.tournament)
+        cachelib.recalculate(self)
 
 BEST_OF = (
     (1, 1),
