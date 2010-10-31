@@ -16,13 +16,13 @@ __all__ = ('cachelib',)
 class CacheLibrary(threading.local):
     cache_keys = None
     chars = string.lowercase + string.uppercase
-    cache_version = 1
+    cache_version = 1.241
 
     def __init__(self):
         self.cache_keys = {}
 
     def _rand_string(self, length):
-        return ''.join(random.choice(chars) for _ in range(length))
+        return ''.join(random.choice(CacheLibrary.chars) for _ in range(length))
 
     def compute_arity(self, format):
         return len(_format_re.split(format)) - 1
@@ -98,7 +98,7 @@ class CacheLibrary(threading.local):
                 if inner_key_val is None:
                     inner_key_val = self._rand_string(5)
                     cache.set(outer_key, inner_key_val, 86400 * 30)
-                key = '_'.join((prefix, inner_key_val, cache_key_template % tuple(args[skip_pos:arity])))
+                key = '_'.join((prefix, inner_key_val, cache_key_template % tuple(args[skip_pos:skip_pos + arity])))
                 result = cache.get(key)
                 if result is None:
                     result = method(*args, **kwargs)

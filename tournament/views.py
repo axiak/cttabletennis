@@ -39,21 +39,21 @@ def load_divisions(request):
                                      parent_division=d)
     return HttpResponse("Divisions Created!")
 
-@cachelib.register_cache("view_divisions", model=Tournament, skip_pos=1, recompute=False)
-def view_divisions_t(request, t):
+@cachelib.register_cache("view_divisions_%s", model=Tournament, skip_pos=1, recompute=False)
+def view_divisions_t(request, t, is_msie):
     singles_divisions, doubles_divisions = t.get_divisions()
     return direct_to_template(request, 'tournament/divisions.html',
                               {'singles': singles_divisions,
                                'doubles': doubles_divisions})
 
 def view_divisions(request):
-    return view_divisions_t(request, Tournament.objects.get())
+    return view_divisions_t(request, Tournament.objects.get(), is_msie(request))
 
 def view_players(request):
-    return view_players_t(request, Tournament.objects.get())
+    return view_players_t(request, Tournament.objects.get(), is_msie(request))
 
-@cachelib.register_cache("view_players", model=Tournament, skip_pos=1, recompute=False)
-def view_players_t(request, t):
+@cachelib.register_cache("view_players_%s", model=Tournament, skip_pos=1, recompute=False)
+def view_players_t(request, t, is_msie):
     singles_divisions, doubles_divisions = t.get_divisions()
     players = set()
     players_teams = defaultdict(list)
@@ -85,7 +85,7 @@ def view_player(request, player_pk):
     return direct_to_template(request, 'tournament/player_actual_profile.html',
                               {'player': player, 'wins': total_wins, 'losses': total_losses})
 
-@cachelib.register_cache("view_team", model=Team, skip_pos=1, cache_timeout=3600, recompute=False)
+@cachelib.register_cache("view_team_%s", model=Team, skip_pos=1, cache_timeout=3600, recompute=False)
 def view_team(request, team_pk):
     team = Team.objects.get(pk = team_pk)
     wins, losses, matches = team.stats()
@@ -132,3 +132,6 @@ def get_name(team):
         if team.player2:
             players.append(team.player2)
         return ' and '.join(sorted([player.user.username for player in players]))
+
+def is_msie(request):
+    return 'MSIE' in request.META.get('HTTP_USER_AGENT', '').split()

@@ -179,3 +179,6 @@ h1 {
 #singles a.team-name:hover, #doubles a.team-name:hover {
 	text-decoration: none;
 }
+.player-title {
+	margin-left: 25px;
+}

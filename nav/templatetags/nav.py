@@ -4,7 +4,7 @@ register = template.Library()
 places = (
     ('home', ''),
     'teams',
-   # 'players', 
+   ('players', 'tournament/players/'),
     ('divisions', 'tournament/divisions/'),
     'rules',
     

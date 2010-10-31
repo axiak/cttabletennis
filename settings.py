@@ -40,6 +40,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.core.context_processors.debug",
     "nav.context_processor.set_path",
+    "msie.msie_processor",
 )
 
 MEDIA_URL = "/media/"

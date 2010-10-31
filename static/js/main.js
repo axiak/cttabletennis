@@ -1,8 +1,8 @@
-(function ($){
-	$(document).ready(function () {
-		$.crash();
-	});
-})(jQuery);
+	(function ($){
+		$(document).ready(function () {
+			$.crash();
+		});
+	})(jQuery);
 	(function ($){
 		var Dialog;
 		$(document).ready(function() {
@@ -47,4 +47,19 @@
 			});
 			$("#navbar a.current-place").bind("click", function (){ return false;});
 		});
+		$(document).ready(function(){
+			$("#players").accordion({
+				collapsible: true,
+				active: false,
+				animated: 'bounceslide',
+				autoHeight: false,
+				change: function (event, ui) {
+					if (!ui.newContent.find("#wait").length) {
+						return;
+					}
+					ui.newContent.load(ui.newContent.attr("data-url"));
+				}
+			});
+		});
 	})(jQuery);
+

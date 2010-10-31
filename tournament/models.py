@@ -46,6 +46,12 @@ class Player(models.Model):
         teams.sort(key=lambda t: 0 if t.player2 is None else 1)
         return teams
 
+    def save(self, *args, **kwargs):
+        super(Player, self).save(*args, **kwargs)
+        cachelib.recalculate(self)
+        for tournament in Tournament.objects.all():
+            cachelib.recalculate(tournament)
+
 
 class Tournament(models.Model):
     start_date = models.DateField()
@@ -73,6 +79,10 @@ class Tournament(models.Model):
                 singles_divisions.append(division)
         return singles_divisions, doubles_divisions
 
+    def save(self, *args, **kwargs):
+        super(Tournament, self).save(*args, **kwargs)
+        cachelib.recalculate(self)
+
 
 GAME_TYPES = (
 ('single', 'single'),
@@ -90,12 +100,12 @@ class Team(models.Model):
         if self.name:
             return self.name
         else:
-            template = 'Team %(players)s'
+            template = u'Team %(players)s'
         players = [self.player1]
         if self.player2:
             players.append(self.player2)
         return template % {'name': self.name,
-                           'players': ' and '.join(map(str, players))}
+                           'players': u' and '.join(map(unicode, players))}
 
     @models.permalink
     def get_absolute_url(self):
@@ -202,9 +212,11 @@ class Match(models.Model):
         super(Match, self).save(*args, **kwargs)
         cachelib.recalculate(self.team1)
         cachelib.recalculate(self.team2)
+        if self.parent_division:
+            cachelib.recalculate(self.parent_division)
 
     def __unicode__(self):
-        return "Match between %s and %s" % (self.team1, self.team2)
+        return u"Match between %s and %s" % (self.team1, self.team2)
 
     def clean(self):
         from django.core.exceptions import ValidationError
