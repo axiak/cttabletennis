@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}- Live Webcam{% endblock %}
+
+{% block preload_js %}
+{{ block.super }}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/swfobject.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/jwplayer.js"></script>
+{% endblock %}
+
+{% block content %}
+<h1>Live</h1>
+<p>
+<div class="player" id="live-content">
+Please install the latest edition of Flash.
+</div>
+</p>
+<script type="text/javascript"><!--
+(function ($){
+//	$(document).ready(function (e){
+		var flashVars = {
+			file: 'vlc.sdp',
+			autostart: 'true',
+			streamer: 'rtmp://10.42.43.59/rtplive'
+		};
+
+		var params = {
+			allowfullscreen: 'true',
+			allowscriptaccess: 'always',
+			bgcolor: '#000000'
+		};
+
+		var attributes = {
+			id: 'player1',
+			name: 'player1'
+		};
+
+		swfobject.embedSWF('{{ MEDIA_URL }}swf/player.swf', 'live-content', '480', '360', '9', 'false', flashVars, params, attributes);
+	//});
+})(jQuery);
+//--></script>
+{% endblock %}

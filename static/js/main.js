@@ -30,26 +30,9 @@
 		});
 	})(jQuery);
 	(function ($) {
-		$(document).ready(function (){
-			$("#countdown_dashboard").countDown({
-				omitWeeks: true,
-				targetDate: {
-					"day": 1,
-					"month": 11,
-					"year": 2010,
-					"hour": 8,
-					"min": 0,
-					"sec": 0
-				}});
-			$("#navbar a").bind("click", function () {
-			    var href = $(this).attr("href")
-			    return (href != "/prizes");
-			});
-			$("#navbar a.current-place").bind("click", function (){ return false;});
-		});
 		$(document).ready(function(){
 			$("#players").accordion({
-				collapsible: true,
+			        collapsible: true,
 				active: false,
 				animated: 'bounceslide',
 				autoHeight: false,
@@ -60,6 +43,7 @@
 					ui.newContent.load(ui.newContent.attr("data-url"));
 				}
 			});
+			
 		});
 	})(jQuery);
 

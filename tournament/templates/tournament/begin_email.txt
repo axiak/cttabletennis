@@ -1,0 +1,40 @@
+Hey {{ player.user.first_name }}!
+
+The tournament has started! As was sent out earlier, there
+are no set times for your matches, just play when you can.
+To find out which games you need to play, go to your player
+information under http://www.cttabletennis.com/tournament/players/.
+We have a long document describing rules on the web page, but
+here's a reminder of some of the more salient points:
+
+  - Any game you play with someone who is on your "upcoming"
+    matches is a tournament match--you can only practice with
+    players from other divisions.
+
+  - Score cards and pens will be on the windowsill near the
+    table. Please fill them out while you're playing your
+    match so that we can get scores from all sets. Either
+    hand one of us the cards or email us the scores and we'll
+    save the information on the web site.
+
+  - For now, a match consists of a best-of-3 sets, which each
+    set played to 21.
+
+  - Upon deuce (both teams having 20 points), the serving
+    alternation pattern is 1, 2, 2... until one team has two
+    more points than the other team.
+
+  - Referees are not necessary-- we're honest here. Disputes
+    can result in a "do-over" of a point.
+
+  - (For doubles) Lines are counted as "in".
+
+  - The strict rules for throwing a ball while serving are not
+    going to be enforced during division playoffs, but will be
+    expected to be followed during the next stage.
+
+  - Here are your upcoming matches:
+{% for team in player.get_teams %}{% with team.matches.1 as future %}{% if future %}{% for match in future %}
+    * {% if team.player2 %}{{ team|safe }}{% else %}You{% endif %} vs. {{ match.other_team|safe }}{% endfor %}{% endif %}{% endwith %}{% endfor %}
+
+-Mike, Brad, Babs
