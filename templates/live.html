@@ -10,17 +10,25 @@
 {% block content %}
 <h1>Live</h1>
 <p>
+{% if not in_office %}
+Sorry, you can only view this stream from within the office.
+{% else %}
 <div class="player" id="live-content">
 Please install the latest edition of Flash.
-</div>
+</div><br />
+<span style="font-size: 0.9em; text-align: center; width: 100%; font-style: italic;">
+  Bandwidth graciously provided by <a href="mailto:slow@crunchtime.com">Seth Low</a>. Thanks!
+</span>
+{% endif %}
 </p>
+{% if in_office %}
 <script type="text/javascript"><!--
 (function ($){
 //	$(document).ready(function (e){
 		var flashVars = {
-			file: 'vlc.sdp',
+			file: 'tabletennis.sdp',
 			autostart: 'true',
-			streamer: 'rtmp://10.42.43.59/rtplive'
+			streamer: 'rtmp://live.cttabletennis.com/rtplive'
 		};
 
 		var params = {
@@ -38,4 +46,5 @@ Please install the latest edition of Flash.
 	//});
 })(jQuery);
 //--></script>
+{% endif %}
 {% endblock %}

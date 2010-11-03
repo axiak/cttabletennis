@@ -18,6 +18,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'tournament',
     'nav',
+    'djangomarkdown',
 )
 
 MIDDLEWARE_CLASSES = (

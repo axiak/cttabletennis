@@ -1,20 +1,28 @@
 body {
 	font-family: "Cantarell", arial, serif;
 	margin: 0 0 20px 0;
-	padding: 0;
-	
+	padding: 0;	
 }
+h3, h1, h2, h4, div, p, span, hr { padding: 0; margin: 0 }
 #main {
 	margin: 0;
 	padding: 0;
 	width: 100%;
 	height: 100%;
 }
+h2, h1 {
+	margin-top: 10px;
+}
 #main, body {
 	background: #D5E3EF; /* old browsers */
 	background: -moz-linear-gradient(left, #D5E3EF 1%, #eeeeee 15%, #eeeeee 85%, #D5E3EF 100%); /* firefox */
 	background: -webkit-gradient(linear, left top, right top, color-stop(1%,#D5E3EF), color-stop(15%,#eeeeee), color-stop(85%,#eeeeee), color-stop(100%,#D5E3EF)); /* webkit */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#D5E3EF', endColorstr='#D5E3EF',GradientType=1 ); /* ie */
+}
+.bio {
+	font-size: 0.9em;
+	color: #333;
+	padding: 0 10px 10px;
 }
 
 #countdown h1 {
@@ -104,9 +112,12 @@ h1 {
 
 #singles .division, #doubles .division {
 	border: 2px solid black;
-	width: 200px;
 	background: #FADFAB;
 	padding: 5px;
+	font-size: 0.9em;
+	width: 335px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
 }
 #singles .division {
 	position: absolute;
@@ -122,8 +133,8 @@ h1 {
 }
 
 #doubles .division {
-	width: 450px;
-	margin: 0 0 30px 90px;
+	width: 550px;
+	margin: 0 0 30px 40px;
 }
 
 .division h3 {
@@ -133,10 +144,10 @@ h1 {
 }
 
 #division-bone-daddys, #division-joes-crab-shack, #division-flying-star {
-	left: 400px;
+	left: 323px;
 }
 #division-princess, #division-cheesecake, #division-fuddruckers {
-	left: 30px;
+	left: -24px;
 }
 #division-bone-daddys, #division-princess {
 	top: 15px;
@@ -151,7 +162,7 @@ h1 {
 
 #division-wagamama {
 	top: 660px;
-	left: 215px;
+	left:150px;
 }
 #wait {
 	display: block;
@@ -181,4 +192,25 @@ h1 {
 }
 .player-title {
 	margin-left: 25px;
+}
+.team-players {
+    font-size: 0.9em;
+    font-style: italic;
+    margin: 0px;
+    padding-left: 20px;
+}
+.player-stats {
+	border: 1px solid #999;
+	margin-left: 10px;
+	width: 90%;
+	font-size: 0.9em;
+	padding: 0 10px;
+	margin-bottom: 30px;
+	background: #f2f2f2;
+}
+a.bodylink {
+	color: #333;
+}
+a.bodylink:hover {
+	text-decoration: none;
 }

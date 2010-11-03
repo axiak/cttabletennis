@@ -1,15 +1,34 @@
 import itertools
 
 from collections import defaultdict
+from google.appengine.api.labs import taskqueue
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.admin.views.decorators import staff_member_required
 from django.views.generic.simple import direct_to_template
 from django.core.cache import cache
+from google.appengine.api import mail
+from django.template.loader import render_to_string
 
 from cachehelper.helper import cachelib
 
 from tournament.models import *
+
+office_ip  = (
+    '127.0.0',
+    '209.113.164.',)
+
+def live(request):
+    if 'iPhone' in request.META.get('HTTP_USER_AGENT', ''):
+        return HttpResponseRedirect('http://live.cttabletennis.com:1935/rtplive/tabletennis.sdp/playlist.m3u8')
+    else:
+        in_office = False
+        for pattern in office_ip:
+            if request.META['REMOTE_ADDR'].startswith(pattern):
+                in_office = True
+                break
+        return direct_to_template(request, 'live.html',
+                                  {'in_office': in_office})
 
 
 @staff_member_required
@@ -68,8 +87,10 @@ def view_players_t(request, t, is_msie):
     players.sort(key=lambda p: (p.user.first_name, p.user.last_name))
     for player in players:
         player.set_teams(players_teams[player])
-    
-    return direct_to_template(request, 'tournament/players.html',
+    template = 'tournament/players.html'
+    if is_msie:
+        template = 'tournament/players-msie.html'
+    return direct_to_template(request, template,
                               {'players': players})
 
 
@@ -77,15 +98,10 @@ def view_players_t(request, t, is_msie):
 @cachelib.register_cache("view_player", model=Player, skip_pos=1, cache_timeout=3600, recompute=False)
 def view_player(request, player_pk):
     player = Player.objects.get(pk=player_pk)
-    total_wins, total_losses = 0, 0
-    for team in player.get_teams():
-        wins, losses, matches = team.stats()
-        total_wins += wins
-        total_losses += losses
     return direct_to_template(request, 'tournament/player_actual_profile.html',
-                              {'player': player, 'wins': total_wins, 'losses': total_losses})
+                              {'player': player})
 
-@cachelib.register_cache("view_team_%s", model=Team, skip_pos=1, cache_timeout=3600, recompute=False)
+@cachelib.register_cache("view_team", model=Team, skip_pos=1, cache_timeout=3600, recompute=False)
 def view_team(request, team_pk):
     team = Team.objects.get(pk = team_pk)
     wins, losses, matches = team.stats()
@@ -105,7 +121,34 @@ def view_team(request, team_pk):
         return direct_to_template(request, 'tournament/player_profile.html',
                                   context)
 
-
+#@staff_member_required
+def send_emails(request):
+    num_emails = 0
+    if 'pid' not in request.GET:
+        players = Player.objects.all()
+        urls = []
+        for player in players:
+            url = '/tournament/send_emails/?pid=%s' % player.pk
+            taskqueue.add(url=url, method='GET')
+            urls.append(url)
+        return HttpResponse("Queued:\n%s" % urls)
+    really = True
+    player = Player.objects.get(pk=request.GET['pid'])
+    to_email = 'mcaxiak@gmail.com'
+    cc = ['maxiak@crunchtime.com']
+    if really:
+        to_email = player.user.email
+        cc.extend(('sheeralal@crunchtime.com', 'bpielech@crunchtime.com'))
+    message_body = render_to_string('tournament/begin_email.txt', {'player': player})
+    message = mail.EmailMessage(sender="Table Tennis Tournament <support@cttabletennis.com>",
+                                to=to_email,
+                                cc=cc,
+                                subject='Table Tennis Tournament Begins!',
+                                body=message_body)
+    message.send()
+    num_emails += 1
+    return HttpResponse("sent %d emails" % num_emails)
+        
 
 def combinations(iterable, r):
     # combinations('ABCD', 2) --> AB AC AD BC BD CD

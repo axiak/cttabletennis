@@ -1,16 +1,13 @@
-<h2>{{ player }} [{{ wins }} - {{ losses }}]</h2>
+{% load markdowntags %}<h2>{{ player }}<br /> [{{ player.total_score.total_wins }} - {{ player.total_score.total_losses }}]</h2>
 <h3>Bio</h3>
-<p class="bio">
-{% if not player.bio %}
-	Not available.
-{% else %}
-	{{ player.bio }}
-{% endif %}
-</p>
+<div class="bio">
+{{ player.bio|default:"Not available."|markdown }}
+</div>
 <h2>Individual Performance</h2>
 {% for team in player.get_teams %}
 	{% if team.player2 %}<h2>Doubles Performance</h2>
 	<h3>{{ team }}</h3>
+	{% if team.name %}<span class="team-players">Players: {{ team.players|join:", " }}</span>{% endif %}
 	{% endif %}
 	{% with team.matches as match_info %}
 		{% with match_info.1 as future %}

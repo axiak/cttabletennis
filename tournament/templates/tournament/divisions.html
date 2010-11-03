@@ -21,7 +21,7 @@ will be two wild card picks based on set and match performance.
 {% for division in singles %}
 	<div class="division" id="division-{{ division.name|slugify }}">
 		<h3>{{ division.name }}</h3>
-		{% for team in division.teams %}
+		{% for team in division.sorted_teams %}
 		{% team_item team %} <br />
 		{% endfor %}
 	</div>
@@ -37,7 +37,7 @@ final 8 tournament.
 {% for division in doubles %}
 	<div class="division" id="division-{{ division.name|slugify }}">
 		<h3>{{ division.name }}</h3>
-		{% for team in division.teams %}
+		{% for team in division.sorted_teams %}
 		{% team_item team %} <br />
 		{% endfor %}
 	</div>

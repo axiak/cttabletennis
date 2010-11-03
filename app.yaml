@@ -16,9 +16,9 @@ skip_files:
 - ^(.*/)?.*/RCS/.*
 - ^(.*/)?\..*
 - ^media/
-- ^django/
-- ^djangotoolbox/
-- ^dbindexer/
+#- ^django/
+#- ^djangotoolbox/
+#- ^dbindexer/
 
 handlers:
 - url: /favicon.ico

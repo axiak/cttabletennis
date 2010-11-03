@@ -52,6 +52,14 @@ class Player(models.Model):
         for tournament in Tournament.objects.all():
             cachelib.recalculate(tournament)
 
+    def total_score(self):
+        total_wins, total_losses = 0, 0
+        for team in self.get_teams():
+            wins, losses, matches = team.stats()
+            total_wins += wins
+            total_losses += losses
+        return {'total_wins': total_wins,
+                'total_losses': total_losses}
 
 class Tournament(models.Model):
     start_date = models.DateField()
@@ -114,6 +122,12 @@ class Team(models.Model):
     def stats_key(self):
         return 'stats__%s' % self.pk        
 
+    def players(self):
+        a = [self.player1]
+        if self.player2:
+            a.append(self.player2)
+        return a
+
     @cachelib.register_cache("stats")
     def stats(self, allow_cache=True):
         team = self
@@ -128,6 +142,22 @@ class Team(models.Model):
                 else:
                     losses += 1
         return (wins, losses, games)
+
+    @cachelib.register_cache("team_score")
+    def team_score(self):
+        wins, losses, games = self.stats()
+        score = [wins, -losses, 0, 0, 0, 0]
+        for game in games:
+            self_scores = game.scores_for(self)
+            other_scores = game.scores_for(game.other_team(self))
+            breakdown = game.game_breakdown()
+            if not breakdown:
+                continue
+            score[2] += breakdown[self]
+            score[3] -= breakdown[game.other_team(self)]
+            score[4] += sum(self_scores)
+            score[5] -= sum(other_scores)
+        return score
 
     def save(self, *args, **kwargs):
         super(Team, self).save(*args, **kwargs)
@@ -182,6 +212,11 @@ class Division(models.Model):
         super(Division, self).save(*args, **kwargs)
         cachelib.recalculate(self.tournament)
         cachelib.recalculate(self)
+
+    def sorted_teams(self):
+        return sorted(self.teams,
+                      key=lambda x: x.team_score(),
+                      reverse=True)
 
 BEST_OF = (
     (1, 1),
@@ -245,14 +280,31 @@ class Match(models.Model):
         if len(self.team1_scores) != len(self.team2_scores):
             raise ValidationError("Score lengths do not match.")
 
+    def game_breakdown(self):
+        breakdown = {}
+        if self.team1_scores is None:
+            return breakdown
+        breakdown[self.team1] = sum(1 for a, b in zip(self.team1_scores, self.team2_scores) if a > b)
+        breakdown[self.team2] = sum(1 for a, b in zip(self.team1_scores, self.team2_scores) if a < b)
+        return breakdown
 
     def winner(self):
-        if self.team1_scores is None:
+        breakdown = self.game_breakdown()
+        if not breakdown:
             return None
-        score_wins = [(a > b) - (a < b) for a, b in zip(self.team1_scores, self.team2_scores)]
-        if sum(score_wins) == 0:
-            return None
-        elif sum(score_wins) > 0:
+        if breakdown[self.team1] > breakdown[self.team2]:
             return self.team1
         else:
             return self.team2
+
+    def other_team(self, team):
+        if self.team1 == team:
+            return self.team2
+        else:
+            return self.team1
+
+    def scores_for(self, team):
+        if self.team1 == team:
+            return self.team1_scores
+        else:
+            return self.team2_scores

@@ -1,0 +1,26 @@
+{% extends "jqueryuibase.html" %}
+
+{% block title %} - Players{% endblock %}
+
+{% block content %}
+<h1>Players</h1>
+<p>
+Meet the players here. Click on a player to view more details about them.
+</p>
+<a name="top"></a>
+<ul>
+{% for player in players %}
+  <li><a class="bodylink" href="#{{ player|slugify }}">{{ player.user.first_name }}{% if player.nickname %} &quot;{{ player.nickname }}&quot; {% endif %} {{ player.user.last_name }}</a></li>
+{% endfor %}
+</ul>
+
+<div id="players-msie">
+{% for player in players %}
+<div class="player-stats">
+<a name="{{ player|slugify }}"></a>
+<a class="bodylink" href="#top">[Top]</a>
+{% include "tournament/player_actual_profile.html" %}
+</div>
+{% endfor %}
+</div>
+{% endblock %}

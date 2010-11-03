@@ -7,6 +7,7 @@ places = (
    ('players', 'tournament/players/'),
     ('divisions', 'tournament/divisions/'),
     'rules',
+    'live',
     
 #    'brackets',
     'prizes',

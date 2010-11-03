@@ -1,5 +1,6 @@
 import re
 
+import logging
 import string
 import random
 import inspect
@@ -16,7 +17,7 @@ __all__ = ('cachelib',)
 class CacheLibrary(threading.local):
     cache_keys = None
     chars = string.lowercase + string.uppercase
-    cache_version = 1.241
+    cache_version = 1.5
 
     def __init__(self):
         self.cache_keys = {}
@@ -76,6 +77,7 @@ class CacheLibrary(threading.local):
                     pk = obj
                 prefix = '%s_%s_%s_' % (CacheLibrary.cache_version, model_name, pk)
                 key = prefix + cache_key_template
+                logging.debug("CACHE LIB: Getting %s" % key)
                 result = cache.get(key)
                 if result is None:
                     result = method(*args, **kwargs)
@@ -98,7 +100,8 @@ class CacheLibrary(threading.local):
                 if inner_key_val is None:
                     inner_key_val = self._rand_string(5)
                     cache.set(outer_key, inner_key_val, 86400 * 30)
-                key = '_'.join((prefix, inner_key_val, cache_key_template % tuple(args[skip_pos:skip_pos + arity])))
+                key = '_'.join((prefix, inner_key_val, cache_key_template % tuple(args[skip_pos + 1:skip_pos + 1 + arity])))
+                logging.debug("CACHELIB: Getting key %r" % key)
                 result = cache.get(key)
                 if result is None:
                     result = method(*args, **kwargs)
